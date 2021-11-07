@@ -1,0 +1,28 @@
+### 电商项目DB规划
+
+- 为以后数据库迁移提供方便
+- 避免跨库操作，把经常一起关联查询的表放到一个DB中
+- 为方便识别表所在的DB，在表名前增加库名前缀
+- 用户数据库(mall_customer)
+  - customer_info 用户信息表
+  - customer_addr  用户收货地址
+  - customer_login  用户登录表
+  - customer_level_inf 用户级别信息表
+  - customer_login_log  用户登录日志表
+  - customer_point_log  用户积分表
+  - customer_balance_log  用户余额变动表
+- 商品数据库(mall_product)
+  - product_info  商品信息表
+  - product_pic_info  商品图片信息表
+  - product_category  商品分类信息表
+  - product_supplier_info  商品供货商信息表
+  - product_comment  商品评论表
+  - product_brand_info  品牌信息表
+- 订单数据库(mall_order)
+  - ordermaster
+  - orderdetail
+  - ordercustomeraddr
+  - ordercart
+  - shippinginfo
+  - warehouseinfo
+  - warehouse_product
