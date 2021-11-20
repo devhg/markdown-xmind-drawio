@@ -1,14 +1,6 @@
-# 【万字长文】吃透负载均衡
+# 负载均衡
 
-> 仅用于收藏：https://mp.weixin.qq.com/s/6M-cSVTFhv2axpaOhpBuNQ
-
-首先告诉大家一件事，在十一国庆期间，引擎的机器又又。。。又扛不住了流量。
-
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZybpN9t6ERsqX6dduqx43F3Z9nVug5BauLQ0OTw4DyLdW6Qz7NINoLg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
-
-经过监控分析，发现某个服务的一个实例所在的虚拟机扛不住了，所以采取临时措施[流量控制](https://mp.weixin.qq.com/s?__biz=Mzk0MzI4OTI1Ng==&mid=2247484677&idx=1&sn=dbf3afa848db5026227c1d87cfc3b3dc&scene=21#wechat_redirect)之后，问题解决了，但还是造成了不小的损失。
-
-经过此次故障，以及分析故障的过程中对负载均衡又有了新的更加深入的认识，所以将这部分写出来，算是做个故障总结吧。
+> https://mp.weixin.qq.com/s/6M-cSVTFhv2axpaOhpBuNQ
 
 ## 1写在前面
 
@@ -54,7 +46,7 @@
 
 > 负载均衡，英文名称为Load Balance，其含义就是指将负载（工作任务或者网络请求）进行平衡，分摊到多个操作单元(服务器或者组件)上进行运行。目的是尽量将网络流量 ***平均*** 发送到多个服务器上，以保证整个业务系统的高可用。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZ0vU1o4Z6DQLZjmAFLcaEym9kmjR119pdoI0eHlUTtcxcB62Q5KrFoA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)负载均衡
+![图片](load.assets/640-20211120172923997)负载均衡
 
 在互联网的早期，网络还不是很发达，流量相对较小，业务也比较简单，单台服务器或者实例就有可能满足访问需要。但如今在互联网发达的今天，流量请求动辄百亿、甚至上千亿，单台服务器或者实例已完全不能满足需求，这就有了集群。不论是为了实现高可用还是高性能，都需要用到多台机器来扩展服务能力，用户的请求不管连接到哪台服务器，都能得到相同的相应处理。
 
@@ -84,7 +76,7 @@
 
 目前业界领先的两款硬件负载均衡器：F5和A10
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZJicTUIfKKSRlCJzJqEqAPMka4C7ule6AWfM71WyoDYjqh2tCEqiaEN0g/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)硬件负载均衡
+![图片](data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==)硬件负载均衡
 
 **优点**：
 
@@ -106,7 +98,7 @@
 
 常见负载均衡软件有：LVS、Nginx、Haproxy。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZqibffL3x9vc43L1ZmibOW6BSaN45ibHsHoe9M8U9qgicqnSVHtJOzibXh7A/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)软件负载均衡
+![图片](load.assets/640-20211120172923967)软件负载均衡
 
 **优点**
 
@@ -167,7 +159,7 @@ CDN的全称是Content Delivery Network，即内容分发网络。其就是采�
 
 #### 根据OSI网络模型分类
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZN0XfQsmm3AA456JJ7jO2tDXsSocNz7gYg2rv13b81BzOZP2avFmWeQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)OSI是一个开放性的通信系统互连参考模型，如上图所示。在OSI参考模型中，分别有：
+![图片](data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==)OSI是一个开放性的通信系统互连参考模型，如上图所示。在OSI参考模型中，分别有：
 
 - 应用层
 - 表示层
@@ -212,7 +204,7 @@ CDN的全称是Content Delivery Network，即内容分发网络。其就是采�
 
 为了便于理解，我们假设负载均衡器所在的ip地址为192.168.1.1，后端服务实例的mac地址分别为52:54:00:A1:CB:F7，61:52:00:A2:BD, 71:63:52:A3:CA。如下图所示：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZPibugJXtgo2zGBCHSmRLjmHGW4lp5Ir2eX7bfQzxYcI21ibIiaTf6G4Vw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)二层负载均衡
+![图片](load.assets/640-20211120172924155)二层负载均衡
 
 在上图中，用户的请求首先到达ip为192.168.1.1的二层负载均衡器，然后二层负载均衡器通过采取一定的策略，选中了mac地址为71:63:52:A3:CA，然后将流量转发至该服务实例。
 
@@ -254,7 +246,7 @@ CDN的全称是Content Delivery Network，即内容分发网络。其就是采�
 
 这种修改目标IP的方式叫NAT模式，这种通过修改目标IP的方式达到负载均衡目的的方式叫做NAT负载均衡。如下图所示：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZEICBGzsSz5c7Ndq0TTE0XC3ruP6uBp3d1qkGEwyOtXd8Wyk1t3R98w/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)NAT模式负载均衡
+![图片](load.assets/640-20211120172923975)NAT模式负载均衡
 
 ###### 四层负载均衡
 
@@ -348,7 +340,7 @@ std::string Select(const std::vector<int> &ips) {
 - 优点：简单高效，易于水平扩展，每个节点满足字面意义上的均衡；
 - 缺点：没有考虑机器的性能问题，根据木桶最短木板理论，集群性能瓶颈更多的会受性能差的服务器影响。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZj2lPrUDSbIRm5djfBl4byxrcBfMgPEmDkY6djicBlyJHCbNebkszv0w/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)轮询法
+![图片](data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==)轮询法
 
 代码实现：
 
@@ -381,7 +373,7 @@ aaaaaaabbc
 - 优点：可以将不同机器的性能问题纳入到考量范围，集群性能最优最大化；
 - 缺点：生产环境复杂多变，服务器抗压能力也无法精确估算，静态算法导致无法实时动态调整节点权重，只能粗糙优化。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZybb9ZIKyicjvLQo8iazMjJ5ERVZk41dWygdR0zTS477JzDxyRXClBbxg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)加权轮询
+![图片](load.assets/640-20211120172924358)加权轮询
 
 #### 加权随机法(Weighted Random)
 
@@ -432,7 +424,7 @@ std::string select(const std::vector<Item> &items) {
 - 优点：动态，实时变化，控制的粒度更细，更灵敏；
 - 缺点：复杂度更高，每次需要计算请求的响应速度；
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZ3wGnfj0QyuqN4VtO0F7xznftpib9bib2Y5rT8VQHjSdTZYVV6cPk4Asg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)最快响应速度
+![图片](load.assets/640-20211120172924408)最快响应速度
 
 #### 最少连接数法(Least Connections)
 
@@ -443,7 +435,7 @@ std::string select(const std::vector<Item> &items) {
 - 优点：动态，根据节点状况实时变化
 - 缺点：提高了复杂度，每次连接断开需要进行计数
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZQlibEzFQtOkBa8poh8ic4ROtXk7ffn54jhb99B9GQyZkalFEJUILuWMw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)最少连接数
+![图片](load.assets/640-20211120172924408-7400564.)最少连接数
 
 #### 源地址哈希法(Source Hashing)
 
@@ -460,7 +452,7 @@ std::string select(const std::vector<Item> &items) {
 
 一些场景希望同样的请求尽量落到一台机器上，比如访问缓存集群时，我们往往希望同一种请求能落到同一个后端上，以充分利用其上已有的缓存，不同的机器承载不同的稳定请求量（也可以理解为固定批用户的请求）。而不是随机地散落到所有机器上，那样的话会迫使所有机器缓存所有的内容，最终由于存不下形成颠簸而表现糟糕。我们都知道hash能满足这个要求，比如当有n台服务器时，输入x总是会发送到第hash(x) % n台服务器上。但当服务器变为m台时，hash(x) % n和hash(x) % m很可能都不相等，这会使得几乎所有请求的发送目的地都发生变化，如果目的地是缓存服务，所有缓存将失效，继而对原本被缓存遮挡的数据库或计算服务造成请求风暴，触发雪崩。一致性哈希是一种特殊的哈希算法，在增加服务器时，发向每个老节点的请求中只会有一部分转向新节点，从而实现平滑的迁移。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/p3sYCQXkuHjNouaq0xmKWOJE7IG6OKNZ9ccGTBJW9oAQwXcCsYWiaazJmhRnsXyN0nic75icosgOg7Q5HthV5JEcA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)一致性哈希
+![图片](load.assets/640-20211120172924454)一致性哈希
 
 优点：
 
@@ -473,3 +465,7 @@ std::string select(const std::vector<Item> &items) {
 
 - 在机器数量较少的时候，区间大小会不平衡。
 - 当一台机器故障的时候，它的压力会完全转移到另外一台机器， 可能无法承载。
+
+## 7结语
+
+负载均衡并不是真正确保网络流量能够"均匀"的分配到后端服务实例。它只是抱着在意外情况发生时候，也能保证用户体验。良好的架构设计和弹性扩容，能够使得负载均衡的功能 ***事半功倍***。
