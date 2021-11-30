@@ -10,7 +10,7 @@ https://mp.weixin.qq.com/s/-MXA4T-ei_U5ewXUNZ0QdQ
 
 单机消息队列可以通过操作系统原生的进程间通信机制来实现，如消息队列、共享内存等。比如我们可以在共享内存中维护一个双端队列：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGGBFtXBaXr7BzNBu49cULHNApNv6cVl8WUsj8R1EI1ibbic3v8HiaHGJCw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-1.png)
 
 消息产出进程不停地往队列里添加消息，同时消息消费进程不断地从队尾有序地取出这些消息。添加消息的任务我们称为 producer，而取出并使用消息的任务，我们称之为 consumer。这种模式在早期单机多进程模式中比较常见， 比如 IO 进程把收到的网络请求存入本机 MQ，任务处理进程从本机 MQ 中读取任务并进行处理。
 
@@ -48,7 +48,7 @@ https://mp.weixin.qq.com/s/-MXA4T-ei_U5ewXUNZ0QdQ
 - 消费关系维护，单播、多播等，可以利用 zk、config server 等保存消费关系。
 - 高级特性，如可靠投递，重复消息，顺序消息等， 很多高级特性之间是相互制约的关系，这里要充分结合应用场景做出取舍。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGTAxX7lQJXKGj7LQibj1wJL42F9UetZH4fKbzLPoXRoian6p5kCf82SrA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-2.png)
 
 #### 1.MQ 基本特性
 
@@ -155,7 +155,7 @@ Kafka 是一个分布式发布订阅消息系统。它以高吞吐、可持久�
 - **Consumer**消息消费者，向 Kafka broker 读取消息的客户端。
 - **Consumer Group**每个 Consumer 属于一个特定的 Consumer Group（可为每个 Consumer 指定 group name，若不指定 group name 则属于默认的 group）。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGbAASohCj24UuSozBbb47bWGwKhkkaXrXX1jJBsVMQhLx0o6UTAib4dw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)kafka实现原理6
+![图片](../../images/distributed-mq-3.png)kafka实现原理6
 
 一个典型的 kafka 集群包含若干 Producer，若干个 Broker（kafka 支持水平扩展）、若干个 Consumer Group，以及一个 zookeeper 集群。Producer 使用 push 模式将消息发布到 broker。consumer 使用 pull 模式从 broker 订阅并消费消息。多个 broker 协同工作，producer 和 consumer 部署在各个业务逻辑中。kafka 通过 zookeeper 管理集群配置及服务协同。
 
@@ -210,13 +210,13 @@ Kafka 中大量使用了页缓存， 这是 Kafka 实现高吞吐的重要因素
 
 **常规方式**
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGmmickEOZG1iccXEIIib6ggAhicDgf4VWquJmrvAk74lU2qntk8SFTQY0MA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-4.png)
 
 应用程序一次常规的数据请求过程，发生了 4 次拷贝，2 次 DMA 和 2 次 CPU，而 CPU 发生了 4 次的切换。（DMA 简单理解就是，在进行 I/O 设备和内存的数据传输的时候，数据搬运的工作全部交给 DMA 控制器，而 CPU 不再参与任何与数据搬运相关的事情）
 
 **零拷贝的方式**
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGnZXnPECrChAX8jiboR9mjlZRWqkIvjktXgtzch2Gk0DlkNUhUZGKNibg/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-5.png)
 
 通过零拷贝优化，CPU 只发生了 2 次的上下文切换和 3 次数据拷贝。
 
@@ -238,7 +238,7 @@ Producer 在发布消息到某个 Partition 时，先通过 ZooKeeper 找到该 
 
 为了提高性能，每个 Follower 在接收到数据后就立马向 Leader 发送 ACK，而**非等到数据写入 Log 中**。因此，对于已经 commit 的消息，Kafka 只能保证它被存于多个 Replica 的内存中，而不能保证它们被持久化到磁盘中，也就不能完全保证异常发生后该条消息一定能被 Consumer 消费。Consumer 读消息也是从 Leader 读取，只有被 commit 过的消息才会暴露给 Consumer。Kafka Replication 的数据流如下图所示：
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGLGAj7XLVZBlDicxMHYGhg3Oxxf2saOtRnOXv8V3LIbIrtibtEmVMCzmQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-6.png)
 
 对于 Kafka 而言，定义一个 Broker 是否“活着”包含两个条件：
 
@@ -259,7 +259,7 @@ leader 发生故障后，会从 ISR 中选出一个新的 leader，之后，为�
 
 Kafka 在 ZooKeeper 中动态维护了一个 ISR（in-sync replicas），这个 ISR 里的所有 Replica 都跟上了 leader，只有 ISR 里的成员才有被选为 Leader 的可能。在这种模式下，对于 f+1 个 Replica，一个 Partition 能在保证不丢失已经 commit 的消息的前提下容忍 f 个 Replica 的失败。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGrpaVdBzb2f3JuXTDiaKlpAFLIrB97vrovwN4r7pkpwRn4jdamfkptibA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-7.png)
 
 LEO：每个副本最大的 offset。
 
@@ -279,7 +279,7 @@ Apache Pulsar 是 Apache 软件基金会顶级项目，是下一代云原生分�
 
 #### **服务和存储分离**
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGAWr3j9B5iasZ8ib78atgJ3tkGhZKWQ4CbicWlQzky3R1SzEA7R6KyQzOg/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-8.png)
 
 在 kafka 的基础上，把数据存储功能从 Broker 中分离出来，Broker 仅面向生产者、消费者提供数据读写能力，但其自身并不存储数据。而在 Broker 层下面使用 Bookie 作为存储层，承担具体的数据存储职责。在 Pulsar 中，broker 的含义和 kafka 中的 broker 是一致的，就是一个运行的 Pulsar 实例， 提供多个分区的读写服务。由于 broker 层不在承担数据存储职责，使得 Broker 层成为无状态服务。这样一来，Broker 的扩缩容就变得非常简单。
 
@@ -290,11 +290,11 @@ Apache Pulsar 是 Apache 软件基金会顶级项目，是下一代云原生分�
 - 分区存储不受限于单个节点存储容量
 - Bookie 数据分布均匀
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGW6za2NWyIHx75PZsbDkTL1FQtcpdgS08BWgs4oGDpvBuaTCx7cHGhA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-9.png)
 
 #### **分片存储**
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGRLS0x4KJpk7ogRYTAF9l4W1ebDVZJ1ReFqELUxLKXN7nqvgwoclzGw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-10.png)
 
 1.在 Kafka 分区（Partition）概念的基础上，按照时间或大小，把分区切分成分片（Segment）。
 
@@ -312,7 +312,7 @@ Apache Pulsar 是 Apache 软件基金会顶级项目，是下一代云原生分�
 - 实时消费时（追尾读），首先从 broker 缓存中读取数据，避免从持久层 bookie 中读取，从而降低投递延迟。
 - 读取历史消息（追赶读）场景中，bookie 会将磁盘消息读入 bookie 读缓存中，从而避免每次都读取磁盘数据，降低读取延时。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGMEeaLFvmV74vIIlzXl1WCPiciaBn5JdRTkFdryn0iaRffda4uTwrsklzw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-11.png)
 
 #### Pulsar 扩展性
 
@@ -320,7 +320,7 @@ Apache Pulsar 是 Apache 软件基金会顶级项目，是下一代云原生分�
 
 Broker 和 Bookie 灵活的容错以及无缝的扩容能力让 Apache Pulsar 具备非常高的可用性，实现了无限制的分区存储。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGg8zykXtoJdtfYrl08tMqicJw1UVyXv4EEmucK5CUbswxTNPEYmgx4yQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-12.png)
 
 ##### ***\*Broker\** \**扩展\****
 
@@ -330,7 +330,7 @@ Broker 和 Bookie 灵活的容错以及无缝的扩容能力让 Apache Pulsar �
 
 存储层的扩容，通过增加 Bookie 节点来实现。通过资源感知和数据放置策略，流量将自动切换到新的 Apache Bookie 中，整个过程不会涉及到不必要的数据搬迁。即扩容时，不会将旧数据从现有存储节点重新复制到新存储节点。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGGxaVPLxMiaE1YRuPHcoiab1Ogla6VQmDQq2xVo9PxW9PhKZgWhmibVTdg/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-13.png)
 
 如图所示，起始状态有四个存储节点，Bookie1, Bookie2, Bookie3, Bookie4，以 Topic1-Part2 为例，当这个分区的最新的存储分片是 SegmentX 时，对存储层扩容，添加了新的 Bookie 节点，BookieX,BookieY，那么当存储分片滚动之后，新生成的存储分片， SegmentX+1,SegmentX+2，会优先选择新的 Bookie 节点（BookieX,BookieY）来保存数据。
 
@@ -346,7 +346,7 @@ Broker 和 Bookie 灵活的容错以及无缝的扩容能力让 Apache Pulsar �
 
 注意，和 Kafka 一样， Pulsar 的一个分区仍然只能由一个 Broker 提供服务，否则无法保证消息的分区有序性。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGdoEeFkCcVRcsbSfSc4xq6P6YicIhj4Vte15quibVbia70RUH8eU3A1Y3w/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-14.png)
 
 ##### **Bookie 容错**
 
@@ -354,7 +354,7 @@ Broker 和 Bookie 灵活的容错以及无缝的扩容能力让 Apache Pulsar �
 
 所有的副本修复都在后台进行，对 Broker 和应用透明，**Broker 会产生新的 Segment 来处理写入请求**，不会影响分区的可用性。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGjxAyoW4WtwDl2SRzlTS3maINdP4r9RWTaJqicwzH33tmSetmMfHxlWQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-15.png)
 
 #### Pulsar 其他特性
 
@@ -380,7 +380,7 @@ Entry 的读写入过程下图所示，数据的写入流程：
 - 如果是 Tailing read 请求，直接从 Memtable 中读取 Entry；
 - 如果是 Catch-up read（滞后消费）请求，先读取 Index 信息，然后索引从 Entry Logger 文件读取 Entry。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGRn8UmgjHkVcGDekuXYAIIbZCzWB0LoolYpT9l2W0dOIJ3lBnxWGFlQ/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-16.png)
 
 一般在进行 Bookie 的配置时，会将 Journal 和 Ledger 存储磁盘进行隔离，减少 Ledger 对于 Journal 写入的影响，并且推荐 Journal 使用性能较好的 SSD 磁盘，读写分离主要体现在：
 
@@ -405,7 +405,7 @@ Pulsar 提供了多种订阅方式来消费消息，分为三种类型：独占�
 
 当消费者断开连接时，所有传递给它但是未被确认（ack）的消息将被重新分配和组织，以便发送给该订阅上剩余的剩余消费者。
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGibme2KEEJQ2XiaibzmdJ3mZyUUGr1dUDKIBjbSicyBOAtCD2ZkOorTCYEg/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-17.png)
 
 ##### ***\*多种 ACK 模型\****
 
@@ -416,6 +416,6 @@ Pulsar 提供两种消息确认方法：
 - 单条确认（Individual Ack），单独确认一条消息。被确认后的消息将不会被重新传递
 - 累积确认（Cumulative Ack），通过累积确认，消费者只需要确认它收到的最后一条消息
 
-![图片](https://mmbiz.qpic.cn/mmbiz_jpg/j3gficicyOvavGf2zJX1zx8CngSLiaicnVlGbDEFqCbaibwUGXG027oFXugYKicTa1gldKAYh1l7FfrqezCXxKs5nZxA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](../../images/distributed-mq-18.png)
 
 上图说明了单条确认和累积确认的差异（灰色框中的消息被确认并且不会被重新传递）。对于累计确认，M12 之前的消息被标记为 Acked。对于单独进行 ACK，仅确认消息 M7 和 M12， 在消费者失败的情况下，除了 M7 和 M12 之外，其他所有消息将被重新传送。
