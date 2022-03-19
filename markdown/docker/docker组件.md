@@ -14,7 +14,7 @@ $ ls /usr/bin/docker*
 
 是不是很多？首先 `/usr/bin/docker` 和 `/usr/bin/dockerd` 就是命令行客户端和daemon，Docker的架构是 `client-server` 模式的：
 
-![docker architecture](https://jiajunhuang.com/articles/img/docker_arch.jpeg)
+![docker architecture](https://image-ihui.oss-cn-beijing.aliyuncs.com/img/docker_arch.jpeg)
 
 这两个，我们就不看了。我们重点看看 `docker-containerd`, `docker-containerd-ctr`, `docker-containerd-shim`, `docker-init`, `docker-proxy`, `docker-runc` 是干什么的，其实最简单的方式，就是加个命令行参数 `--help` 看看他们的简介：
 
@@ -91,7 +91,7 @@ value for "bundle" is the current directory.
 
 看一张图(来自 containerd 官网)：
 
-![containerd architecture](https://jiajunhuang.com/articles/img/containerd_architecture.png)
+![containerd architecture](https://image-ihui.oss-cn-beijing.aliyuncs.com/img/containerd_architecture-20220319165114225.png)
 
 可以看出来，Docker本身其实已经被剥离干净了，只剩下Docker自身的一些特色功能了，真正容器的管控都在containerd里实现。 所以接下来介绍的顺序是 `runc`, `containerd`, `shim`, `docker-init`, `docker-proxy`。今天是第一篇，介绍 `runc` 和 `containerd`。
 
@@ -231,7 +231,9 @@ jiajun@ubuntu:~$ ps axjf | grep -A 3 dockerd
 
 我们来看看 `containerd` 的架构图：
 
-![containerd architecture](https://jiajunhuang.com/articles/img/containerd_architecture.png)
+![containerd architecture](https://image-ihui.oss-cn-beijing.aliyuncs.com/img/containerd_architecture.png)
+
+
 
 从 [官方仓库](https://github.com/containerd/containerd) 的描述可以看出来，其实 `containerd` 就包含了我们常用的 `docker` 的命令：
 
